@@ -12,7 +12,9 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -64,5 +66,38 @@ public class UserService {
             }
         }
         return token;
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> createUser(User user) {
+        Optional<User> newUser = Optional.empty();
+
+        if (!userRepository.findByUsername(user.getUsername()).isPresent()) {
+            List<Role> roles = user.getRoles()
+                    .stream()
+                    .map(role -> roleRepository
+                            .findByRoleName(role.getRoleName()).get())
+                    .collect(Collectors.toList());
+
+            newUser = Optional.of(userRepository.save(new User(
+                    user.getUsername(),
+                    passwordEncoder.encode(user.getPassword()),
+                    user.getFirstName(),
+                    user.getLastName(),
+                    roles)));
+        }
+
+        return newUser;
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    public User modifyUser(User user) {
+        return userRepository.save(user);
     }
 }

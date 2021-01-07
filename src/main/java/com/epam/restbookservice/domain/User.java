@@ -1,5 +1,6 @@
 package com.epam.restbookservice.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,6 +32,7 @@ public class User {
     @Column(name = "username")
     private String username;
     @Column(name = "password")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     @Column(name = "first_name")
     private String firstName;
@@ -48,5 +50,13 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = Arrays.asList(role);
+    }
+
+    public User(String username, String password, String firstName, String lastName, List<Role> roles) {
+        this.username = username;
+        this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.roles = roles;
     }
 }
