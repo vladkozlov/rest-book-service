@@ -60,7 +60,7 @@ public class UserService {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
                 token = Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
             } catch (AuthenticationException e) {
-                log.info("Log in failed for {}", username);
+                log.warn("Login attempt failed for user: {}", username);
             }
         }
         return token;
