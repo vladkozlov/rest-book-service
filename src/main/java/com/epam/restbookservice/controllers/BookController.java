@@ -1,7 +1,7 @@
-package com.epam.restbookservice.controller;
+package com.epam.restbookservice.controllers;
 
 import com.epam.restbookservice.domain.Book;
-import com.epam.restbookservice.service.BookService;
+import com.epam.restbookservice.services.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.epam.restbookservice.repository;
+package com.epam.restbookservice.repositories;
 
 import com.epam.restbookservice.domain.Book;
 import org.springframework.data.repository.CrudRepository;
