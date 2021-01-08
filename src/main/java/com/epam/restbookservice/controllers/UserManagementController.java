@@ -4,6 +4,7 @@ import com.epam.restbookservice.domain.User;
 import com.epam.restbookservice.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -52,5 +53,11 @@ public class UserManagementController {
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     public User modifyUser(@RequestBody User user) {
         return userService.modifyUser(user);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
+    public void deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
     }
 }
