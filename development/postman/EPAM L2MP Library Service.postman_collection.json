@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "1e344dfc-e2e1-4845-a157-6dcd30b85386",
+		"_postman_id": "cefe8fd3-29f2-41dc-a651-6119011c9513",
 		"name": "EPAM L2MP Library Service",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -11,6 +11,16 @@
 				{
 					"name": "Create book",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -159,7 +169,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "User",
@@ -233,7 +244,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		},
 		{
 			"name": "Authentication",
@@ -244,6 +256,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "b8d2bbc8-ac46-4d38-a1ef-9bf8fcd818ec",
 								"exec": [
 									"let response_token = pm.response.text()\r",
 									"\r",
@@ -258,7 +271,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"librarian2\",\r\n    \"password\": \"password\"\r\n}",
+							"raw": "{\r\n    \"username\": \"librarian2\",\r\n    \"password\": \"mark2\",\r\n    \"firstName\" : \"Markus\",\r\n    \"lastName\" : \"Devik\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -266,7 +279,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/auth/signin",
+							"raw": "http://localhost:8080/auth/signup",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -274,7 +287,7 @@
 							"port": "8080",
 							"path": [
 								"auth",
-								"signin"
+								"signup"
 							]
 						}
 					},
@@ -286,6 +299,7 @@
 						{
 							"listen": "test",
 							"script": {
+								"id": "941fd957-704e-4759-a772-b3ae85a75dd4",
 								"exec": [
 									"let response_token = pm.response.text()\r",
 									"\r",
@@ -300,7 +314,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"librarian\",\r\n    \"password\": \"password\"\r\n}",
+							"raw": "{\r\n    \"username\": \"librarian\",\r\n    \"password\": \"librarian\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -322,7 +336,8 @@
 					},
 					"response": []
 				}
-			]
+			],
+			"protocolProfileBehavior": {}
 		}
 	],
 	"event": [
@@ -332,7 +347,8 @@
 				"type": "text/javascript",
 				"exec": [
 					""
-				]
+				],
+				"id": "be732fe5-0707-49b1-bc1a-f90216164201"
 			}
 		},
 		{
@@ -341,14 +357,17 @@
 				"type": "text/javascript",
 				"exec": [
 					""
-				]
+				],
+				"id": "bc8cbeea-097f-47d5-b3bc-16c472252d80"
 			}
 		}
 	],
 	"variable": [
 		{
+			"id": "496bf13a-8db1-4beb-8305-97e84617e662",
 			"key": "token",
 			"value": ""
 		}
-	]
+	],
+	"protocolProfileBehavior": {}
 }
