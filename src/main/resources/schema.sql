@@ -21,5 +21,5 @@ CREATE TABLE user_role(
 CREATE TABLE book(
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     ISBN varchar(13) NOT NULL,
-    name varchar(100) NOT NULL
+    title varchar(100) NOT NULL
 );

@@ -11,3 +11,6 @@ INSERT INTO security_user(id, username, password, first_name, last_name) VALUES 
 INSERT INTO user_role(user_id, role_id) VALUES (1, 1);
 INSERT INTO user_role(user_id, role_id) VALUES (1, 2);
 INSERT INTO user_role(user_id, role_id) VALUES (2, 1);
+
+INSERT INTO book(id, ISBN, title) VALUES (1, '9780545010221', 'Harry Potter and the Deathly Hallows');
+INSERT INTO book(id, ISBN, title) VALUES (2, '9780747538486', 'Harry Potter and the Chamber of Secrets');

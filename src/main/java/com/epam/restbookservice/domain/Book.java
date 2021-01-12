@@ -19,5 +19,5 @@ public class Book {
 
     private String ISBN;
 
-    private String name;
+    private String title;
 }
