@@ -17,3 +17,9 @@ CREATE TABLE user_role(
     CONSTRAINT FK_SECURITY_USER_ID FOREIGN KEY (user_id) REFERENCES security_user(id),
     CONSTRAINT FK_SECURITY_ROLE_ID FOREIGN KEY (role_id) REFERENCES security_role(id)
 );
+
+CREATE TABLE book(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    ISBN varchar(13) NOT NULL,
+    title varchar(100) NOT NULL
+);
