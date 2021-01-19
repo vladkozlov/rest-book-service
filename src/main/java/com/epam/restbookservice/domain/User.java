@@ -43,6 +43,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
+    private boolean isEnabled;
 
     public User(String username, String password, String firstName, String lastName, Role role) {
         this.username = username;
@@ -50,6 +51,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = Arrays.asList(role);
+        this.isEnabled = true;
     }
 
     public User(String username, String password, String firstName, String lastName, List<Role> roles) {
@@ -58,5 +60,6 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = roles;
+        this.isEnabled = true;
     }
 }

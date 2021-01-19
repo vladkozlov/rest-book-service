@@ -93,6 +93,15 @@ public class UserService {
         return newUser;
     }
 
+    public void suspendAccount(String username) {
+        var user = userRepository.findByUsername(username);
+
+        user.ifPresent(u -> {
+            u.setEnabled(false);
+            userRepository.save(u);
+        });
+    }
+
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
