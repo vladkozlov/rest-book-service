@@ -56,10 +56,6 @@ public class AccountController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
     }
 
-    private User getUserFromDTO(UserDTO userDTO) {
-        return new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getFirstName(), userDTO.getLastName());
-    }
-
     private UserDTO userToUserDTO(User user) {
         return UserDTO.builder()
                 .firstName(user.getFirstName())
