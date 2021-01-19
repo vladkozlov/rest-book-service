@@ -17,6 +17,7 @@ public class UserDTO {
     @NotNull
     private String lastName;
     @NotNull
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean isEnabled;
     @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

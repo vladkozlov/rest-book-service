@@ -47,13 +47,17 @@ public class AccountController {
     }
 
     @PostMapping
-    public UserDTO changeUserData(@RequestBody User user) {
+    public UserDTO changeUserData(@RequestBody UserDTO user) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         var currentUsername = authentication.getName();
 
-        return userService.changeUserdata(currentUsername, user)
+        return userService.changeUserdata(currentUsername, userOfUserDTO(user))
                 .map(this::userToUserDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+    }
+
+    private User userOfUserDTO(UserDTO userDTO) {
+        return new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getFirstName(), userDTO.getLastName());
     }
 
     private UserDTO userToUserDTO(User user) {

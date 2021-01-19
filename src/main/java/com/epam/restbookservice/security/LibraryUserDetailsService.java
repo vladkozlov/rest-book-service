@@ -25,7 +25,7 @@ public class LibraryUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User with name " + username + "does not exist."));
+                .orElseThrow(() -> new UsernameNotFoundException("User with name " + username + " does not exist."));
         return withUsername(user.getUsername())
                 .password(user.getPassword())
                 .authorities(user.getRoles())

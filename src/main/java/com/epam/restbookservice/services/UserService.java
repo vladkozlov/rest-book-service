@@ -12,6 +12,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -39,7 +40,7 @@ public class UserService {
         Optional<User> user = Optional.empty();
 
         if (userRepository.findByUsername(username).isEmpty()) {
-            Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
+            var role = roleRepository.findByRoleName("ROLE_USER");
 
             if (role.isPresent()) {
                 user = Optional.of(userRepository.save(new User(
@@ -56,7 +57,7 @@ public class UserService {
 
     public Optional<String> signIn(String username, String password) {
         Optional<String> token = Optional.empty();
-        Optional<User> user = userRepository.findByUsername(username);
+        var user = userRepository.findByUsername(username);
         if(user.isPresent()) {
             try {
                 authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
@@ -80,7 +81,7 @@ public class UserService {
         Optional<User> newUser = Optional.empty();
 
         if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
-            List<Role> roles = user.getRoles()
+            var roles = user.getRoles()
                     .stream()
                     .map(role -> roleRepository
                             .findByRoleName(role.getRoleName()).get())
@@ -118,16 +119,22 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public Optional<User> changeUserdata(String username, User userData) {
-        Optional<User> currentUser = userRepository.findByUsername(username);
+    public Optional<User> changeUserdata(String username, User userData) throws InvalidParameterException {
+
+        var newUsername = userData.getUsername();
+
+        if (newUsername != null && !newUsername.equals(username)) {
+            if (userRepository.existsByUsername(newUsername)) {
+                throw new InvalidParameterException(String.format("Username %s is unavailable.", newUsername));
+            }
+        }
+
+        var currentUser = userRepository.findByUsername(username);
 
         currentUser.ifPresent(user -> {
             user.setFirstName(userData.getFirstName());
             user.setLastName(userData.getLastName());
-
-            if (!userRepository.existsByUsername(user.getUsername())) {
-                user.setUsername(userData.getUsername());
-            }
+            user.setUsername(userData.getUsername());
 
             var password = userData.getPassword();
 
