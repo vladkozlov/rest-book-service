@@ -8,7 +8,8 @@ CREATE TABLE security_user(
     username varchar(50) NOT NULL,
     password varchar(100) NOT NULL,
     first_name varchar(250) NOT NULL,
-    last_name varchar(250) NOT NULL
+    last_name varchar(250) NOT NULL,
+    is_enabled boolean NOT NULL
 );
 
 CREATE TABLE user_role(

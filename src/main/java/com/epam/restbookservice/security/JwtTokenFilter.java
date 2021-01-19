@@ -30,9 +30,13 @@ public class JwtTokenFilter implements Filter {
         getBearerToken(headerValue)
                 .flatMap(userDetailsService::loadUserByJwtToken)
                 .ifPresent(userDetails ->
+                {
+                    if (userDetails.isEnabled()) {
                         SecurityContextHolder
                                 .getContext()
-                                .setAuthentication(new PreAuthenticatedAuthenticationToken(userDetails, "", userDetails.getAuthorities())));
+                                .setAuthentication(new PreAuthenticatedAuthenticationToken(userDetails, "", userDetails.getAuthorities()));
+                    }
+                });
 
         filterChain.doFilter(servletRequest, servletResponse);
     }
