@@ -32,8 +32,12 @@ public class LibraryUserDetailsService implements UserDetailsService {
                 .accountExpired(false)
                 .accountLocked(false)
                 .credentialsExpired(false)
-                .disabled(false)
+                .disabled(isDisabled(user))
                 .build();
+    }
+
+    private boolean isDisabled(User user) {
+        return !user.isEnabled();
     }
 
     public Optional<UserDetails> loadUserByJwtToken(String token) {

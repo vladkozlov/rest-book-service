@@ -38,6 +38,8 @@ public class User {
     private String firstName;
     @Column(name = "last_name")
     private String lastName;
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
@@ -50,6 +52,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = Arrays.asList(role);
+        this.isEnabled = true;
     }
 
     public User(String username, String password, String firstName, String lastName, List<Role> roles) {
@@ -58,5 +61,6 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.roles = roles;
+        this.isEnabled = true;
     }
 }

@@ -16,5 +16,7 @@ public class UserDTO {
     @NotNull
     private String lastName;
     @NotNull
+    private boolean isEnabled;
+    @NotNull
     private List<String> roles;
 }
