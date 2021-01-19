@@ -38,7 +38,7 @@ public class UserService {
     public Optional<User> signUp(String username, String password, String firstName, String lastName) {
         Optional<User> user = Optional.empty();
 
-        if (!userRepository.findByUsername(username).isPresent()) {
+        if (userRepository.findByUsername(username).isEmpty()) {
             Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
 
             if (role.isPresent()) {
@@ -79,7 +79,7 @@ public class UserService {
     public Optional<User> createUser(User user) {
         Optional<User> newUser = Optional.empty();
 
-        if (!userRepository.findByUsername(user.getUsername()).isPresent()) {
+        if (userRepository.findByUsername(user.getUsername()).isEmpty()) {
             List<Role> roles = user.getRoles()
                     .stream()
                     .map(role -> roleRepository
@@ -107,5 +107,28 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public Optional<User> changeUserdata(String username, User userData) {
+        Optional<User> currentUser = userRepository.findByUsername(username);
+
+        currentUser.ifPresent(user -> {
+            user.setFirstName(userData.getFirstName());
+            user.setLastName(userData.getLastName());
+
+            if (!userRepository.existsByUsername(user.getUsername())) {
+                user.setUsername(userData.getUsername());
+            }
+
+            var password = userData.getPassword();
+
+            if (password != null) {
+                user.setPassword(passwordEncoder.encode(password));
+            }
+
+            userRepository.save(user);
+        });
+
+        return currentUser;
     }
 }
