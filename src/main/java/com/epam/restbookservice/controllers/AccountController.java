@@ -7,10 +7,7 @@ import com.epam.restbookservice.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -47,6 +44,20 @@ public class AccountController {
     private String getCurrentAccountUsername() {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
+    }
+
+    @PostMapping
+    public UserDTO changeUserData(@RequestBody UserDTO user) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var currentUsername = authentication.getName();
+
+        return userService.changeUserdata(currentUsername, userOfUserDTO(user))
+                .map(this::userToUserDTO)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+    }
+
+    private User userOfUserDTO(UserDTO userDTO) {
+        return new User(userDTO.getUsername(), userDTO.getPassword(), userDTO.getFirstName(), userDTO.getLastName());
     }
 
     private UserDTO userToUserDTO(User user) {
