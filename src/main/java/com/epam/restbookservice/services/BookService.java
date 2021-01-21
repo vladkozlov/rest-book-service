@@ -34,15 +34,15 @@ public class BookService {
     public Optional<Book> updateBook(Long id, BookDTO request) {
         Optional<Book> optionalBook = getBook(id);
         if (optionalBook.isPresent()) {
-            Book book = updateBook(request, optionalBook);
+            Book book = optionalBook.get();
+            updateBook(request, book);
             return Optional.of(bookRepository.save(book));
         }
 
         return Optional.empty();
     }
 
-    private Book updateBook(BookDTO request, Optional<Book> optionalBook) {
-        Book book = optionalBook.get();
+    private Book updateBook(BookDTO request, Book book) {
         book.setISBN(request.getISBN());
         book.setTitle(request.getTitle());
         return book;
