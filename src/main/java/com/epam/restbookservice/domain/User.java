@@ -1,6 +1,7 @@
 package com.epam.restbookservice.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.jayway.jsonpath.JsonPath;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,8 +16,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -45,6 +49,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
+    private List<BookBorrow> booksBorrows = new LinkedList<>();
 
     public User(String username, String password, String firstName, String lastName, Role role) {
         this.username = username;
@@ -69,5 +74,22 @@ public class User {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+    }
+
+    public void borrow(Book book, java.time.LocalDate expiryDate) {
+        booksBorrows.add(new BookBorrow(book, expiryDate));
+    }
+
+    public List<Book> getBooksWithOutstandingExpiry(LocalDate now) {
+        return booksBorrows
+                .stream().filter(b -> b.getExpiry().isBefore(now))
+                .map(BookBorrow::getBook)
+                .collect(Collectors.toList());
+    }
+
+    public List<Book> getBooks() {
+        return booksBorrows.stream()
+                .map(BookBorrow::getBook)
+                .collect(Collectors.toList());
     }
 }
