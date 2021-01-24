@@ -1,11 +1,15 @@
 package com.epam.restbookservice.services;
 
 import com.epam.restbookservice.domain.Book;
+import com.epam.restbookservice.domain.BookBorrow;
 import com.epam.restbookservice.dtos.BookDTO;
+import com.epam.restbookservice.repositories.BookBorrowRepository;
 import com.epam.restbookservice.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +18,7 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final UserService userService;
 
     public Book saveBook(BookDTO request) {
         Book book = new Book();
@@ -34,15 +39,15 @@ public class BookService {
     public Optional<Book> updateBook(Long id, BookDTO request) {
         Optional<Book> optionalBook = getBook(id);
         if (optionalBook.isPresent()) {
-            Book book = updateBook(request, optionalBook);
+            Book book = optionalBook.get();
+            updateBook(request, book);
             return Optional.of(bookRepository.save(book));
         }
 
         return Optional.empty();
     }
 
-    private Book updateBook(BookDTO request, Optional<Book> optionalBook) {
-        Book book = optionalBook.get();
+    private Book updateBook(BookDTO request, Book book) {
         book.setISBN(request.getISBN());
         book.setTitle(request.getTitle());
         return book;

@@ -15,8 +15,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -45,6 +49,7 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
+    private List<BookBorrow> borrowedBooks;
 
     public User(String username, String password, String firstName, String lastName, Role role) {
         this.username = username;
@@ -53,6 +58,7 @@ public class User {
         this.lastName = lastName;
         this.roles = Arrays.asList(role);
         this.isEnabled = true;
+        this.borrowedBooks = Collections.emptyList();
     }
 
     public User(String username, String password, String firstName, String lastName, List<Role> roles) {
@@ -62,6 +68,7 @@ public class User {
         this.lastName = lastName;
         this.roles = roles;
         this.isEnabled = true;
+        this.borrowedBooks = Collections.emptyList();
     }
 
     public User(String username, String password, String firstName, String lastName) {
@@ -69,5 +76,23 @@ public class User {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.borrowedBooks = Collections.emptyList();
+    }
+
+    public void borrowABook(Book book, LocalDate expireDate) {
+        borrowedBooks.add(new BookBorrow(book, expireDate));
+    }
+
+    public List<Book> getBorrowedBooks(){
+        return borrowedBooks.stream()
+                .map(BookBorrow::getBook)
+                .collect(Collectors.toList());
+    }
+
+    public List<Book> getBooksWithOutstandingExpiry(LocalDate date) {
+        return borrowedBooks.stream()
+                .filter(bookBorrow -> bookBorrow.getExpireAt().isBefore(date))
+                .map(BookBorrow::getBook)
+                .collect(Collectors.toList());
     }
 }

@@ -6,6 +6,7 @@ import com.epam.restbookservice.services.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -50,4 +51,10 @@ public class BookController {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{bookId}/borrow")
+    public void borrowBook(@PathVariable Long bookId) {
+        bookService.borrowBook(bookId);
+    }
+
 }
