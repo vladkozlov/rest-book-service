@@ -24,3 +24,10 @@ CREATE TABLE book(
     ISBN varchar(13) NOT NULL,
     title varchar(100) NOT NULL
 );
+
+CREATE TABLE BOOK_BORROW(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    book_id BIGINT,
+    user_id BIGINT,
+    expire_at DATE NOT NULL
+);

@@ -2,15 +2,23 @@ package com.epam.restbookservice.controllers;
 
 import com.epam.restbookservice.domain.Book;
 import com.epam.restbookservice.dtos.BookDTO;
+import com.epam.restbookservice.services.BookBorrowService;
 import com.epam.restbookservice.services.BookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 
 import static java.lang.String.format;
@@ -21,6 +29,7 @@ import static java.lang.String.format;
 public class BookController {
 
     private final BookService bookService;
+    private final BookBorrowService bookBorrowService;
 
     @PostMapping
     public ResponseEntity<Book> createBook(@RequestBody BookDTO request) {
@@ -53,8 +62,18 @@ public class BookController {
     }
 
     @PostMapping("/{bookId}/borrow")
-    public void borrowBook(@PathVariable Long bookId) {
-        bookService.borrowBook(bookId);
+    public void borrowBook(@PathVariable Long bookId, @RequestBody String expiryDate) {
+        bookBorrowService.borrowABook(bookId, LocalDate.parse(expiryDate));
+    }
+
+    @PostMapping("/{bookId}/return")
+    public void returnBook(@PathVariable Long bookId) {
+        bookBorrowService.returnABook(bookId);
+    }
+
+    @GetMapping("/borrowed")
+    public List<Book> getBorrowedBooks() {
+        return bookBorrowService.getAllBorrowedBooks();
     }
 
 }

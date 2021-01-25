@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BookBorrowRepository extends JpaRepository<BookBorrow, Long> {
 
+    boolean existsBookBorrowByBook(Book book);
+
 }

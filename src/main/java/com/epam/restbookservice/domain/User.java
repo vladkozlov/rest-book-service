@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -14,9 +15,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,22 +34,31 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
+
     @Column(name = "username")
     private String username;
+
     @Column(name = "password")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
+
     @Column(name = "first_name")
     private String firstName;
+
     @Column(name = "last_name")
     private String lastName;
+
     @Column(name = "is_enabled")
     private boolean isEnabled;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name="user_id", referencedColumnName = "id")
     private List<BookBorrow> borrowedBooks;
 
     public User(String username, String password, String firstName, String lastName, Role role) {
@@ -79,8 +89,18 @@ public class User {
         this.borrowedBooks = Collections.emptyList();
     }
 
+    public void borrow(BookBorrow bookBorrow) {
+        borrowedBooks.add(bookBorrow);
+    }
+
     public void borrowABook(Book book, LocalDate expireDate) {
         borrowedBooks.add(new BookBorrow(book, expireDate));
+    }
+
+    public void returnABook(Book book) {
+        borrowedBooks.removeIf(bookBorrow ->
+                bookBorrow.getBook().getId().equals(book.getId())
+        );
     }
 
     public List<Book> getBorrowedBooks(){
