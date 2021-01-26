@@ -23,7 +23,7 @@ public class BookBorrowService {
     private final UserRepository userRepository;
     private final ExpiryService expiryService;
 
-    public BookBorrowService(UserService userService, BookService bookService, BookBorrowRepository bookBorrowRepository, BookRepository bookRepository, UserRepository userRepository, ExpiryService expiryService) {
+    public BookBorrowService(UserService userService, BookBorrowRepository bookBorrowRepository, BookRepository bookRepository, UserRepository userRepository, ExpiryService expiryService) {
         this.userService = userService;
         this.bookBorrowRepository = bookBorrowRepository;
         this.bookRepository = bookRepository;
@@ -85,5 +85,10 @@ public class BookBorrowService {
                 .stream()
                 .map(BookBorrow::getBook)
                 .collect(Collectors.toList());
+    }
+
+    public List<BookBorrow> getAllExpiringBorrowsByDays(Long days) {
+        var expiryDate = LocalDate.now().plusDays(days);
+        return bookBorrowRepository.findAllWithExpiringDateEqual(expiryDate);
     }
 }
