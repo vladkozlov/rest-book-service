@@ -52,7 +52,7 @@ public class BookBorrowService {
                 .ifPresent(user -> {
                     var bookBorrow = new BookBorrow(user, book, tillDate);
 
-                    user.borrow(bookBorrow);
+                    user.borrowBook(bookBorrow);
                     userRepository.save(user);
                 });
     }
@@ -67,8 +67,14 @@ public class BookBorrowService {
         var book = bookOptional.get();
         userService.getCurrentUser()
                 .ifPresent(user -> {
-                    if (user.getBorrowedBooks().contains(book)) {
-                        user.returnABook(book);
+                    var bookBorrow =
+                            user.getBorrowedBooks()
+                                    .stream()
+                                    .filter(bb -> book.equals(bb.getBook()))
+                                    .findFirst();
+
+                    if (bookBorrow.isPresent()) {
+                        user.returnBook(bookBorrow.get());
                         userRepository.save(user);
                     }
                 });

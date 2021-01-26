@@ -1,9 +1,8 @@
 package com.epam.restbookservice.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -23,11 +22,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @Entity
-@Table(name = "security_user")
+@NoArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
@@ -57,8 +55,10 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name="user_id", referencedColumnName = "id")
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<BookBorrow> borrowedBooks;
 
     public User(String username, String password, String firstName, String lastName, Role role) {
@@ -89,21 +89,27 @@ public class User {
         this.borrowedBooks = Collections.emptyList();
     }
 
-    public void borrow(BookBorrow bookBorrow) {
+    public void borrowBook(BookBorrow bookBorrow) {
         borrowedBooks.add(bookBorrow);
+        bookBorrow.setUser(this);
     }
 
-    public void borrowABook(Book book, LocalDate expireDate) {
-        borrowedBooks.add(new BookBorrow(book, expireDate));
+    public void borrowBook(Book book, LocalDate expireDate) {
+        borrowedBooks.add(new BookBorrow(this, book, expireDate));
     }
 
-    public void returnABook(Book book) {
-        borrowedBooks.removeIf(bookBorrow ->
-                bookBorrow.getBook().getId().equals(book.getId())
-        );
+    public void returnBook(BookBorrow bookBorrow) {
+        borrowedBooks.remove(bookBorrow);
+        bookBorrow.setUser(null);
     }
 
-    public List<Book> getBorrowedBooks(){
+//    public void returnBook(Book book) {
+//        borrowedBooks.removeIf(bookBorrow ->
+//                book.getId().equals( bookBorrow.getBook().getId() )
+//        );
+//    }
+
+    public List<Book> getBooks(){
         return borrowedBooks.stream()
                 .map(BookBorrow::getBook)
                 .collect(Collectors.toList());

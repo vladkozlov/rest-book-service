@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Getter
 @Setter
 @Entity
-@Table(name = "security_role")
+@Table(name = "roles")
 public class Role implements GrantedAuthority {
     private static final long serialVersionUID = 1L;
 
