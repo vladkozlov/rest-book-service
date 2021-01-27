@@ -27,4 +27,7 @@ public interface BookBorrowRepository extends JpaRepository<BookBorrow, Long> {
 
     @Query("select bb from BookBorrow bb join fetch bb.user where bb.book.id = :bookId and bb.user.username = :username")
     Optional<BookBorrow> getBookBorrowByBookIdAndUsername(Long bookId, String username);
+
+    @Query("select bb from BookBorrow bb join fetch bb.user where bb.user.username = :username")
+    List<BookBorrow> getBookBorrowsByUserWithUsername(String username);
 }

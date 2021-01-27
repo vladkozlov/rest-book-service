@@ -156,4 +156,8 @@ public class BookBorrowService {
 
         return bookBorrowRepository.save(bookBorrow);
     }
+
+    public List<BookBorrow> getBorrowedBooksForCurrentAccount() {
+        return bookBorrowRepository.getBookBorrowsByUserWithUsername(getCurrentAccountUsername());
+    }
 }
