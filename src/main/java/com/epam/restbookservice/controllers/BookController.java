@@ -85,7 +85,7 @@ public class BookController {
 
     @GetMapping("/borrowed")
     public List<BookBorrowDTO> getBorrowedBooks() {
-        return bookBorrowService.getAllBorrowedBooks()
+        return bookBorrowService.getAllBorrows()
                 .stream()
                 .map(this::bookBorrowToBookBorrowDTO)
                 .collect(Collectors.toList());

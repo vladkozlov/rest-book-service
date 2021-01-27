@@ -28,6 +28,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/auth/signup").permitAll()
                 .antMatchers("/auth/signin").permitAll()
+                .antMatchers("/bookBorrows").hasRole("ROLE_LIBRARIAN")
                 .antMatchers("/h2-console/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

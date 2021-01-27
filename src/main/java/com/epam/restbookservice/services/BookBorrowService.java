@@ -3,7 +3,9 @@ package com.epam.restbookservice.services;
 import com.epam.restbookservice.domain.BookBorrow;
 import com.epam.restbookservice.exceptions.BookIsBorrowedException;
 import com.epam.restbookservice.exceptions.BookNotFoundException;
+import com.epam.restbookservice.exceptions.BookOptionalNotFoundException;
 import com.epam.restbookservice.exceptions.ExpiryDateInvalidException;
+import com.epam.restbookservice.exceptions.UserNotExistException;
 import com.epam.restbookservice.repositories.BookBorrowRepository;
 import com.epam.restbookservice.repositories.BookRepository;
 import com.epam.restbookservice.repositories.UserRepository;
@@ -79,7 +81,7 @@ public class BookBorrowService {
                 });
     }
 
-    public List<BookBorrow> getAllBorrowedBooks() {
+    public List<BookBorrow> getAllBorrows() {
         return bookBorrowRepository.findAll();
     }
 
@@ -109,5 +111,49 @@ public class BookBorrowService {
         if (!expiryService.isBorrowDateValid(expiryDate)) {
             throw new ExpiryDateInvalidException("Expiry date is invalid. Borrow date is limited to a max 1 month.");
         }
+    }
+
+    public BookBorrow addBorrow(Long bookId, Long userId, LocalDate tillDate) {
+        validateExpiryDate(tillDate);
+
+        var user = userRepository.findById(userId);
+        var book = bookRepository.findById(bookId);
+
+        if (user.isEmpty()) {
+            throw new UserNotExistException(String.format("User with id %d not found", userId));
+        }
+
+        if (book.isEmpty()) {
+            throw new BookNotFoundException(String.format("Book with id %d not found", bookId));
+        }
+
+        return bookBorrowRepository.save(new BookBorrow(user.get(), book.get(), tillDate));
+    }
+
+    public BookBorrow editBookBorrow(Long bookBorrowId, Long userId, Long bookId, LocalDate tillDate) {
+        validateExpiryDate(tillDate);
+        var bookBorrowOptional = bookBorrowRepository.findById(bookBorrowId);
+        var user = userRepository.findById(userId);
+        var book = bookRepository.findById(bookId);
+
+        if (user.isEmpty()) {
+            throw new UserNotExistException(String.format("User with id %d not found", userId));
+        }
+
+        if (book.isEmpty()) {
+            throw new BookNotFoundException(String.format("Book with id %d not found", bookId));
+        }
+
+        if (bookBorrowOptional.isEmpty()) {
+            throw new BookOptionalNotFoundException(String.format("Book borrow with id %d not found", bookBorrowId));
+        }
+
+        var bookBorrow = bookBorrowOptional.get();
+
+        bookBorrow.setUser(user.get());
+        bookBorrow.setBook(book.get());
+        bookBorrow.setExpireAt(tillDate);
+
+        return bookBorrowRepository.save(bookBorrow);
     }
 }
