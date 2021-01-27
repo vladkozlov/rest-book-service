@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BookBorrowRepository extends JpaRepository<BookBorrow, Long> {
@@ -19,6 +20,11 @@ public interface BookBorrowRepository extends JpaRepository<BookBorrow, Long> {
     )
     List<BookBorrow> findAll();
     boolean existsBookBorrowByBook(Book book);
+
     @Query("select bb from BookBorrow bb join fetch bb.user where bb.expireAt = :date")
     List<BookBorrow> findAllWithExpiringDateEqual(LocalDate date);
+
+
+    @Query("select bb from BookBorrow bb join fetch bb.user where bb.book.id = :bookId and bb.user.username = :username")
+    Optional<BookBorrow> getBookBorrowByBookIdAndUsername(Long bookId, String username);
 }

@@ -16,11 +16,9 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -94,31 +92,8 @@ public class User {
         bookBorrow.setUser(this);
     }
 
-    public void borrowBook(Book book, LocalDate expireDate) {
-        borrowedBooks.add(new BookBorrow(this, book, expireDate));
-    }
-
-    public void returnBook(BookBorrow bookBorrow) {
+    public void returnABook(BookBorrow bookBorrow) {
         borrowedBooks.remove(bookBorrow);
         bookBorrow.setUser(null);
-    }
-
-//    public void returnBook(Book book) {
-//        borrowedBooks.removeIf(bookBorrow ->
-//                book.getId().equals( bookBorrow.getBook().getId() )
-//        );
-//    }
-
-    public List<Book> getBooks(){
-        return borrowedBooks.stream()
-                .map(BookBorrow::getBook)
-                .collect(Collectors.toList());
-    }
-
-    public List<Book> getBooksWithOutstandingExpiry(LocalDate date) {
-        return borrowedBooks.stream()
-                .filter(bookBorrow -> bookBorrow.getExpireAt().isBefore(date))
-                .map(BookBorrow::getBook)
-                .collect(Collectors.toList());
     }
 }

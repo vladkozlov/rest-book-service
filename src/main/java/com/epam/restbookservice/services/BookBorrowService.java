@@ -1,6 +1,5 @@
 package com.epam.restbookservice.services;
 
-import com.epam.restbookservice.domain.Book;
 import com.epam.restbookservice.domain.BookBorrow;
 import com.epam.restbookservice.exceptions.BookIsBorrowedException;
 import com.epam.restbookservice.exceptions.BookNotFoundException;
@@ -12,7 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.epam.restbookservice.services.UserService.getCurrentAccountUsername;
 
 @Service
 public class BookBorrowService {
@@ -33,9 +33,7 @@ public class BookBorrowService {
 
     public void borrowABook(Long bookId, LocalDate tillDate) {
 
-        if (!expiryService.isBorrowDateValid(tillDate)) {
-            throw new ExpiryDateInvalidException("Expiry date is invalid. Borrow date is limited to a max 1 month.");
-        }
+        validateExpiryDate(tillDate);
 
         var bookOptional = bookRepository.findById(bookId);
         if (bookOptional.isEmpty()) {
@@ -60,6 +58,7 @@ public class BookBorrowService {
     public void returnABook(Long bookId) {
 
         var bookOptional = bookRepository.findById(bookId);
+
         if (bookOptional.isEmpty()) {
             throw new BookNotFoundException(String.format("Book with id %d not found", bookId));
         }
@@ -74,21 +73,41 @@ public class BookBorrowService {
                                     .findFirst();
 
                     if (bookBorrow.isPresent()) {
-                        user.returnBook(bookBorrow.get());
+                        user.returnABook(bookBorrow.get());
                         userRepository.save(user);
                     }
                 });
     }
 
-    public List<Book> getAllBorrowedBooks() {
-        return bookBorrowRepository.findAll()
-                .stream()
-                .map(BookBorrow::getBook)
-                .collect(Collectors.toList());
+    public List<BookBorrow> getAllBorrowedBooks() {
+        return bookBorrowRepository.findAll();
     }
+
 
     public List<BookBorrow> getAllExpiringBorrowsByDays(Long days) {
         var expiryDate = LocalDate.now().plusDays(days);
         return bookBorrowRepository.findAllWithExpiringDateEqual(expiryDate);
+    }
+
+    public void extendBorrowTime(Long bookId, LocalDate expiryDate) {
+
+        validateExpiryDate(expiryDate);
+
+        if (!bookRepository.existsBookById(bookId)) {
+            throw new BookNotFoundException(String.format("Book with id %d not found", bookId));
+        }
+
+        bookBorrowRepository
+                .getBookBorrowByBookIdAndUsername(bookId, getCurrentAccountUsername())
+                .ifPresent(bookBorrow -> {
+                    bookBorrow.setExpireAt(expiryDate);
+                    bookBorrowRepository.save(bookBorrow);
+                });
+    }
+
+    private void validateExpiryDate(LocalDate expiryDate) {
+        if (!expiryService.isBorrowDateValid(expiryDate)) {
+            throw new ExpiryDateInvalidException("Expiry date is invalid. Borrow date is limited to a max 1 month.");
+        }
     }
 }
