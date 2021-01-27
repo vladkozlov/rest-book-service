@@ -50,6 +50,11 @@ public class BookController {
         return ResponseEntity.ok(bookService.getBooks());
     }
 
+    @GetMapping("/search")
+    public ResponseEntity<List<Book>> searchBooks(@RequestParam String title) {
+        return ResponseEntity.ok(bookService.searchBooks(title));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBook(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getBook(id)
