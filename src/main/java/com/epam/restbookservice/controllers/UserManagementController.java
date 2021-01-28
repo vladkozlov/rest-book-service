@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserManagementController {
+public class UserManagementController implements SecuredController {
 
     private final UserService userService;
 

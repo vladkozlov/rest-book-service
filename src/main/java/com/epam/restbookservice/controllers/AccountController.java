@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/account")
-public class AccountController {
+public class AccountController implements SecuredController {
 
     private final UserService userService;
     private final BookBorrowService bookBorrowService;
