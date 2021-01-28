@@ -1,6 +1,5 @@
 package com.epam.restbookservice.services;
 
-import com.epam.restbookservice.domain.Role;
 import com.epam.restbookservice.domain.User;
 import com.epam.restbookservice.repositories.RoleRepository;
 import com.epam.restbookservice.repositories.UserRepository;
