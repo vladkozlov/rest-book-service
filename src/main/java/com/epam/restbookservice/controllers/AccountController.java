@@ -46,7 +46,7 @@ public class AccountController implements SecuredController {
     public List<BookBorrowDTO> getCurrentAccountBorrowedBooks() {
         return bookBorrowService.getBorrowedBooksForCurrentAccount()
                 .stream()
-                .map(this::bookBorrowToBookBorrowDTO)
+                .map(BookBorrowDTO::bookBorrowToBookBorrowDTO)
                 .collect(Collectors.toList());
     }
 
@@ -99,13 +99,4 @@ public class AccountController implements SecuredController {
         return role -> role.substring(5);
     }
 
-
-    private BookBorrowDTO bookBorrowToBookBorrowDTO(BookBorrow bookBorrow) {
-        return BookBorrowDTO.builder()
-                .id(bookBorrow.getBook().getId())
-                .title(bookBorrow.getBook().getTitle())
-                .isbn(bookBorrow.getBook().getISBN())
-                .tillDate(bookBorrow.getExpireAt())
-                .build();
-    }
 }

@@ -1,6 +1,7 @@
 package com.epam.restbookservice.controllers;
 
 import com.epam.restbookservice.domain.BookBorrow;
+import com.epam.restbookservice.dtos.BookBorrowDTO;
 import com.epam.restbookservice.dtos.BorrowManagementDTO;
 import com.epam.restbookservice.repositories.BookBorrowRepository;
 import com.epam.restbookservice.services.BookBorrowService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/bookBorrows")
@@ -25,8 +27,11 @@ public class BookBorrowsController implements SecuredController {
     private final BookBorrowRepository bookBorrowRepository;
 
     @GetMapping
-    public List<BookBorrow> getAllBorrows() {
-        return bookBorrowService.getAllBorrows();
+    public List<BookBorrowDTO> getAllBorrows() {
+        return bookBorrowService.getAllBorrows()
+                .stream()
+                .map(BookBorrowDTO::bookBorrowToBookBorrowDTO)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
