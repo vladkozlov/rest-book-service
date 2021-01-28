@@ -22,9 +22,7 @@ import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
@@ -170,9 +168,11 @@ class UserServiceTest {
 
     @Test
     void modifyUser() {
+        long userId = 3L;
         User user = new User();
+        user.setId(userId);
 
-        underTest.modifyUser(user);
+        underTest.modifyUser(userId, user);
 
         verify(userRepository).save(user);
     }

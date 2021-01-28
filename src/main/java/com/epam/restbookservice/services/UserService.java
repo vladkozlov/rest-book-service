@@ -1,6 +1,7 @@
 package com.epam.restbookservice.services;
 
 import com.epam.restbookservice.domain.User;
+import com.epam.restbookservice.exceptions.UserNotExistException;
 import com.epam.restbookservice.repositories.RoleRepository;
 import com.epam.restbookservice.repositories.UserRepository;
 import com.epam.restbookservice.security.JwtProvider;
@@ -111,8 +112,35 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User modifyUser(User user) {
-        return userRepository.save(user);
+    public Optional<User> modifyUser(Long userId, User user) {
+        var dbUserOptional = userRepository.findById(userId);
+
+        if (dbUserOptional.isEmpty()) {
+            throw new UserNotExistException(String.format("User with id %s not found", userId));
+        }
+
+        var u = dbUserOptional.get();
+
+        if (user.getUsername() != null) {
+            u.setUsername(user.getUsername());
+        }
+        if (user.getFirstName() != null) {
+            u.setFirstName(user.getFirstName());
+        }
+        if(user.getLastName() != null) {
+            u.setLastName(user.getLastName());
+        }
+        if (user.getPassword() != null) {
+            u.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        if (user.getRoles() != null && !user.getRoles().isEmpty()) {
+            u.setRoles(user.getRoles());
+        }
+        if (user.getBorrowedBooks() != null && !user.getBorrowedBooks().isEmpty()){
+            u.setBorrowedBooks(user.getBorrowedBooks());
+        }
+
+        return Optional.of(userRepository.save(u));
     }
 
     public void deleteUser(Long id) {

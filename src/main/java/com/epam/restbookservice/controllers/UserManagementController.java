@@ -1,7 +1,9 @@
 package com.epam.restbookservice.controllers;
 
 import com.epam.restbookservice.domain.User;
+import com.epam.restbookservice.dtos.UserManagementDTO;
 import com.epam.restbookservice.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,44 +17,49 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserManagementController implements SecuredController {
 
     private final UserService userService;
 
-    public UserManagementController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserManagementDTO> getAllUsers() {
+        return userService.getAllUsers()
+                .stream()
+                .map(UserManagementDTO::userToUserManagementDTO)
+                .collect(Collectors.toList());
     }
 
-    @GetMapping
-    @RequestMapping("/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public User getUser(@PathVariable Long id) {
+    public UserManagementDTO getUser(@PathVariable Long id) {
         return userService.getUserById(id)
+                .map(UserManagementDTO::userToUserManagementDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "User with id " + id + " not found."));
+                        String.format("User with id %s not found.", id)));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public User createUser(@RequestBody User user) {
+    public UserManagementDTO createUser(@RequestBody User user) {
         return userService.createUser(user)
+                .map(UserManagementDTO::userToUserManagementDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "User with username " + user.getUsername() + " already exists."));
+                        String.format("User with username %s already exists.", user.getUsername())));
     }
 
-    @PutMapping
+    @PutMapping("/{userId}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public User modifyUser(@RequestBody User user) {
-        return userService.modifyUser(user);
+    public UserManagementDTO modifyUser(@PathVariable Long userId, @RequestBody User user) {
+        return userService.modifyUser(userId, user)
+                .map(UserManagementDTO::userToUserManagementDTO)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Something bad happen when modifying user"));
     }
 
     @DeleteMapping("/{id}")
