@@ -35,8 +35,7 @@ public class UserManagementController implements SecuredController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping
-    @RequestMapping("/{id}")
+    @GetMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
     public UserManagementDTO getUser(@PathVariable Long id) {
         return userService.getUserById(id)
