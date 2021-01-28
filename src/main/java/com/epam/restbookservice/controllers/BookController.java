@@ -1,24 +1,30 @@
 package com.epam.restbookservice.controllers;
 
+import static java.lang.String.format;
+
+import java.net.URI;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.epam.restbookservice.domain.Book;
+import com.epam.restbookservice.domain.BookBorrow;
+import com.epam.restbookservice.dtos.BookBorrowDTO;
 import com.epam.restbookservice.dtos.BookDTO;
+import com.epam.restbookservice.exceptions.ExpiryDateInvalidException;
+import com.epam.restbookservice.services.BookBorrowService;
 import com.epam.restbookservice.services.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.net.URI;
-import java.util.List;
-
-import static java.lang.String.format;
 
 @RestController
 @RequestMapping("/books")
@@ -26,6 +32,7 @@ import static java.lang.String.format;
 public class BookController implements SecuredController {
 
     private final BookService bookService;
+    private final BookBorrowService bookBorrowService;
 
     @Operation(summary = "Create a book")
     @ApiResponses(value = {
@@ -100,4 +107,50 @@ public class BookController implements SecuredController {
         bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/{bookId}/borrow")
+    public void borrowBook(@PathVariable Long bookId, @RequestBody String expiryDate) {
+        bookBorrowService.borrowABook(bookId, LocalDate.parse(expiryDate));
+    }
+
+    @PostMapping("/{bookId}/return")
+    public void returnBook(@PathVariable Long bookId) {
+        bookBorrowService.returnABook(bookId);
+    }
+
+    @PostMapping("/{bookId}/extend")
+    public void extendBorrowTime(@PathVariable Long bookId, @RequestBody String expiryDate) {
+        bookBorrowService.extendBorrowTime(bookId, LocalDate.parse(expiryDate));
+    }
+
+    @GetMapping("/borrowed")
+    public List<BookBorrowDTO> getBorrowedBooks() {
+        return bookBorrowService.getAllBorrows()
+                .stream()
+                .map(this::bookBorrowToBookBorrowDTO)
+                .collect(Collectors.toList());
+    }
+
+    private BookBorrowDTO bookBorrowToBookBorrowDTO(BookBorrow bookBorrow) {
+        return BookBorrowDTO.builder()
+                .id(bookBorrow.getBook().getId())
+                .title(bookBorrow.getBook().getTitle())
+                .isbn(bookBorrow.getBook().getISBN())
+                .tillDate(bookBorrow.getExpireAt())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ExpiryDateInvalidException.class)
+    public String expiryDateIsInvalid(ExpiryDateInvalidException ex) {
+        return ex.getMessage();
+
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DateTimeParseException.class)
+    public String expiryDateIsCorrupted(DateTimeParseException ex) {
+        return ex.getMessage();
+    }
+
 }

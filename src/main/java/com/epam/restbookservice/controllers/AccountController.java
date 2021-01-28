@@ -1,13 +1,20 @@
 package com.epam.restbookservice.controllers;
 
+import com.epam.restbookservice.domain.BookBorrow;
 import com.epam.restbookservice.domain.Role;
 import com.epam.restbookservice.domain.User;
+import com.epam.restbookservice.dtos.BookBorrowDTO;
 import com.epam.restbookservice.dtos.UserDTO;
+import com.epam.restbookservice.services.BookBorrowService;
 import com.epam.restbookservice.services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -19,9 +26,11 @@ import java.util.stream.Collectors;
 public class AccountController implements SecuredController {
 
     private final UserService userService;
+    private final BookBorrowService bookBorrowService;
 
-    public AccountController(UserService userService) {
+    public AccountController(UserService userService, BookBorrowService bookBorrowService) {
         this.userService = userService;
+        this.bookBorrowService = bookBorrowService;
     }
 
     @GetMapping
@@ -31,6 +40,14 @@ public class AccountController implements SecuredController {
         return userService.getUserByUsername(currentUsername)
                 .map(this::userToUserDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
+    }
+
+    @GetMapping("/borrowedBooks")
+    public List<BookBorrowDTO> getCurrentAccountBorrowedBooks() {
+        return bookBorrowService.getBorrowedBooksForCurrentAccount()
+                .stream()
+                .map(BookBorrowDTO::bookBorrowToBookBorrowDTO)
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/suspend")
@@ -81,4 +98,5 @@ public class AccountController implements SecuredController {
     private Function<String, String> getOriginalRoleName() {
         return role -> role.substring(5);
     }
+
 }

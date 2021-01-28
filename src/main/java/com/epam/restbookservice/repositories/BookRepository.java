@@ -9,6 +9,9 @@ import java.util.List;
 @Repository
 public interface BookRepository extends JpaRepository<Book, Long> {
 
+
+    boolean existsBookById(Long bookId);
+
     List<Book> findByTitleContaining(String title);
 
 }
