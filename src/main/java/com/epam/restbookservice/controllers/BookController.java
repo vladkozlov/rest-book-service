@@ -62,6 +62,11 @@ public class BookController implements SecuredController {
                     content = @Content),
             @ApiResponse(responseCode = "404", description = "Book not found",
                     content = @Content) })
+    @GetMapping("/search")
+    public ResponseEntity<List<Book>> searchBooks(@RequestParam String title) {
+        return ResponseEntity.ok(bookService.searchBooks(title));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBook(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getBook(id)
