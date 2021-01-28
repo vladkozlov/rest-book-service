@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/bookBorrows")
 @RequiredArgsConstructor
-public class BookBorrowsController {
+public class BookBorrowsController implements SecuredController {
 
     private final BookBorrowService bookBorrowService;
     private final BookBorrowRepository bookBorrowRepository;
