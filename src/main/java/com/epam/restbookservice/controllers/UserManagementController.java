@@ -3,6 +3,7 @@ package com.epam.restbookservice.controllers;
 import com.epam.restbookservice.domain.User;
 import com.epam.restbookservice.dtos.UserManagementDTO;
 import com.epam.restbookservice.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,13 +21,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserManagementController implements SecuredController {
 
     private final UserService userService;
-
-    public UserManagementController(UserService userService) {
-        this.userService = userService;
-    }
 
     @GetMapping
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
@@ -56,10 +54,10 @@ public class UserManagementController implements SecuredController {
                         String.format("User with username %s already exists.", user.getUsername())));
     }
 
-    @PutMapping
+    @PutMapping("/{userId}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public UserManagementDTO modifyUser(@RequestBody User user) {
-        return userService.modifyUser(user)
+    public UserManagementDTO modifyUser(@PathVariable Long userId, @RequestBody User user) {
+        return userService.modifyUser(userId, user)
                 .map(UserManagementDTO::userToUserManagementDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Something bad happen when modifying user"));
