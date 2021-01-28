@@ -11,13 +11,17 @@ import java.time.LocalDate;
 public class BookBorrowDTO {
 
     private Long id;
+    private Long userId;
+    private Long bookId;
     private String title;
     private String isbn;
     private LocalDate tillDate;
 
     public static BookBorrowDTO bookBorrowToBookBorrowDTO(BookBorrow bookBorrow) {
         return BookBorrowDTO.builder()
-                .id(bookBorrow.getBook().getId())
+                .id(bookBorrow.getId())
+                .bookId(bookBorrow.getBook().getId())
+                .userId(bookBorrow.getUser().getId())
                 .title(bookBorrow.getBook().getTitle())
                 .isbn(bookBorrow.getBook().getISBN())
                 .tillDate(bookBorrow.getExpireAt())

@@ -1,6 +1,5 @@
 package com.epam.restbookservice.controllers;
 
-import com.epam.restbookservice.domain.BookBorrow;
 import com.epam.restbookservice.dtos.BookBorrowDTO;
 import com.epam.restbookservice.dtos.BorrowManagementDTO;
 import com.epam.restbookservice.repositories.BookBorrowRepository;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,8 +35,13 @@ public class BookBorrowsController implements SecuredController {
     }
 
     @PostMapping
-    public BookBorrow addBookBorrow(BorrowManagementDTO borrowDTO) {
-        return bookBorrowService.addBorrow(borrowDTO.getBookId(), borrowDTO.getUserId(), LocalDate.parse(borrowDTO.getTillDate()));
+    public BookBorrowDTO addBookBorrow(@RequestBody BorrowManagementDTO borrowDTO) {
+        return BookBorrowDTO.bookBorrowToBookBorrowDTO(
+                bookBorrowService.addBorrow(
+                        borrowDTO.getBookId(),
+                        borrowDTO.getUserId(),
+                        LocalDate.parse(borrowDTO.getTillDate()))
+        );
     }
 
     @DeleteMapping("/{bookBorrowId}")
@@ -45,8 +50,14 @@ public class BookBorrowsController implements SecuredController {
     }
 
     @PutMapping("/{bookBorrowId}")
-    public BookBorrow editBookBorrow(@PathVariable Long bookBorrowId, BorrowManagementDTO borrowDTO) {
-        return bookBorrowService.editBookBorrow(bookBorrowId, borrowDTO.getUserId(), borrowDTO.getBookId(),LocalDate.parse(borrowDTO.getTillDate()));
+    public BookBorrowDTO editBookBorrow(@PathVariable Long bookBorrowId, @RequestBody BorrowManagementDTO borrowDTO) {
+        return BookBorrowDTO.bookBorrowToBookBorrowDTO(
+                bookBorrowService.editBookBorrow(
+                        bookBorrowId,
+                        borrowDTO.getUserId(),
+                        borrowDTO.getBookId(),
+                        LocalDate.parse(borrowDTO.getTillDate()))
+        );
     }
 
 }
