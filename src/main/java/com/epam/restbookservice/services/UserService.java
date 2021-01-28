@@ -111,8 +111,8 @@ public class UserService {
         return userRepository.findById(id);
     }
 
-    public User modifyUser(User user) {
-        return userRepository.save(user);
+    public Optional<User> modifyUser(User user) {
+        return Optional.of(userRepository.save(user));
     }
 
     public void deleteUser(Long id) {

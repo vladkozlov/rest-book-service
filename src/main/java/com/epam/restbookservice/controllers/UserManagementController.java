@@ -40,24 +40,29 @@ public class UserManagementController implements SecuredController {
     @GetMapping
     @RequestMapping("/{id}")
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public User getUser(@PathVariable Long id) {
+    public UserManagementDTO getUser(@PathVariable Long id) {
         return userService.getUserById(id)
+                .map(UserManagementDTO::userToUserManagementDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-                        "User with id " + id + " not found."));
+                        String.format("User with id %s not found.", id)));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public User createUser(@RequestBody User user) {
+    public UserManagementDTO createUser(@RequestBody User user) {
         return userService.createUser(user)
+                .map(UserManagementDTO::userToUserManagementDTO)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                        "User with username " + user.getUsername() + " already exists."));
+                        String.format("User with username %s already exists.", user.getUsername())));
     }
 
     @PutMapping
     @PreAuthorize("hasRole('ROLE_LIBRARIAN')")
-    public User modifyUser(@RequestBody User user) {
-        return userService.modifyUser(user);
+    public UserManagementDTO modifyUser(@RequestBody User user) {
+        return userService.modifyUser(user)
+                .map(UserManagementDTO::userToUserManagementDTO)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Something bad happen when modifying user"));
     }
 
     @DeleteMapping("/{id}")
