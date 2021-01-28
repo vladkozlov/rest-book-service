@@ -1,8 +1,6 @@
 package com.epam.restbookservice.controllers;
 
 import com.epam.restbookservice.domain.User;
-import com.epam.restbookservice.dtos.BookBorrowDTO;
-import com.epam.restbookservice.dtos.UserDTO;
 import com.epam.restbookservice.dtos.UserManagementDTO;
 import com.epam.restbookservice.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -35,20 +33,8 @@ public class UserManagementController implements SecuredController {
     public List<UserManagementDTO> getAllUsers() {
         return userService.getAllUsers()
                 .stream()
-                .map(this::userToUserManagementDTO)
+                .map(UserManagementDTO::userToUserManagementDTO)
                 .collect(Collectors.toList());
-    }
-
-    private UserManagementDTO userToUserManagementDTO(User user) {
-        return UserManagementDTO
-                .builder()
-                .user(UserDTO.userToUserDTO(user))
-                .bookBorrow(user
-                        .getBorrowedBooks()
-                        .stream()
-                        .map(BookBorrowDTO::bookBorrowToBookBorrowDTO)
-                        .collect(Collectors.toList()))
-                .build();
     }
 
     @GetMapping
