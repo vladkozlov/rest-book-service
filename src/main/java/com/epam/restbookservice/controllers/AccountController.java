@@ -5,6 +5,11 @@ import com.epam.restbookservice.dtos.BookBorrowDTO;
 import com.epam.restbookservice.dtos.UserDTO;
 import com.epam.restbookservice.services.BookBorrowService;
 import com.epam.restbookservice.services.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +25,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/account")
+@Tag(name = "Accounts", description = "Managing accounts")
 public class AccountController implements SecuredController {
 
     private final UserService userService;
@@ -30,6 +36,13 @@ public class AccountController implements SecuredController {
         this.bookBorrowService = bookBorrowService;
     }
 
+    @Operation(summary = "Get account details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Account details found"),
+            @ApiResponse(responseCode = "400", description = "Invalid user supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content) })
     @GetMapping
     public UserDTO getCurrentAccountData() {
         var currentUsername = getCurrentAccountUsername();
@@ -39,6 +52,11 @@ public class AccountController implements SecuredController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found."));
     }
 
+    @Operation(summary = "Get borrowed books")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Borrowed books found"),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content) })
     @GetMapping("/borrowedBooks")
     public List<BookBorrowDTO> getCurrentAccountBorrowedBooks() {
         return bookBorrowService.getBorrowedBooksForCurrentAccount()
@@ -47,6 +65,13 @@ public class AccountController implements SecuredController {
                 .collect(Collectors.toList());
     }
 
+    @Operation(summary = "Suspend account")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Account suspended"),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content) })
     @PostMapping("/suspend")
     public ResponseEntity<Void> suspendAccount() {
         var currentUsername = getCurrentAccountUsername();
@@ -60,6 +85,13 @@ public class AccountController implements SecuredController {
         return authentication.getName();
     }
 
+    @Operation(summary = "Change account details")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Account details changed"),
+            @ApiResponse(responseCode = "400", description = "Invalid data supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "User not found",
+                    content = @Content) })
     @PostMapping
     public UserDTO changeUserData(@RequestBody UserDTO user) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();

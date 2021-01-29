@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +39,7 @@ import static java.lang.String.format;
 @RestController
 @RequestMapping("/books")
 @RequiredArgsConstructor
+@Tag(name = "Books", description = "Managing books")
 public class BookController implements SecuredController {
 
     private final BookService bookService;
@@ -70,7 +72,7 @@ public class BookController implements SecuredController {
         return ResponseEntity.ok(bookService.getBooks());
     }
 
-    @Operation(summary = "Get a book by its id")
+    @Operation(summary = "Search for a book")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Found the book",
                     content = { @Content(mediaType = "application/json")}),
@@ -83,6 +85,14 @@ public class BookController implements SecuredController {
         return ResponseEntity.ok(bookService.searchBooks(title));
     }
 
+    @Operation(summary = "Get a book by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the book",
+                    content = { @Content(mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content) })
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBook(@PathVariable Long id) {
         return ResponseEntity.ok(bookService.getBook(id)
@@ -117,21 +127,47 @@ public class BookController implements SecuredController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Borrow a book")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Borrowed the book"),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content) })
     @PostMapping("/{bookId}/borrow")
     public void borrowBook(@PathVariable Long bookId, @RequestBody String expiryDate) {
         bookBorrowService.borrowABook(bookId, LocalDate.parse(expiryDate));
     }
 
+    @Operation(summary = "Return a book")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Returned the book"),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content) })
     @PostMapping("/{bookId}/return")
     public void returnBook(@PathVariable Long bookId) {
         bookBorrowService.returnABook(bookId);
     }
 
+    @Operation(summary = "Extend the borrow time for a book")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Extended the book borrow time"),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content) })
     @PostMapping("/{bookId}/extend")
     public void extendBorrowTime(@PathVariable Long bookId, @RequestBody String expiryDate) {
         bookBorrowService.extendBorrowTime(bookId, LocalDate.parse(expiryDate));
     }
 
+    @Operation(summary = "Get borrowed books")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the borrowed books"),
+            @ApiResponse(responseCode = "404", description = "Borrowed book not found",
+                    content = @Content) })
     @GetMapping("/borrowed")
     public List<BookBorrowDTO> getBorrowedBooks() {
         return bookBorrowService.getAllBorrows()

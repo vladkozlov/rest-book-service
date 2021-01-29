@@ -4,6 +4,12 @@ import com.epam.restbookservice.dtos.BookBorrowDTO;
 import com.epam.restbookservice.dtos.BorrowManagementDTO;
 import com.epam.restbookservice.repositories.BookBorrowRepository;
 import com.epam.restbookservice.services.BookBorrowService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +27,17 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/bookBorrows")
 @RequiredArgsConstructor
+@Tag(name = "Book borrows", description = "Managing book borrows")
 public class BookBorrowsController implements SecuredController {
 
     private final BookBorrowService bookBorrowService;
     private final BookBorrowRepository bookBorrowRepository;
 
+    @Operation(summary = "Get book borrows")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Found the borrowed books"),
+            @ApiResponse(responseCode = "404", description = "Borrowed book not found",
+                    content = @Content) })
     @GetMapping
     public List<BookBorrowDTO> getAllBorrows() {
         return bookBorrowService.getAllBorrows()
@@ -34,6 +46,9 @@ public class BookBorrowsController implements SecuredController {
                 .collect(Collectors.toList());
     }
 
+    @Operation(summary = "Borrow a book")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Borrowed the book")})
     @PostMapping
     public BookBorrowDTO addBookBorrow(@RequestBody BorrowManagementDTO borrowDTO) {
         return BookBorrowDTO.bookBorrowToBookBorrowDTO(
@@ -44,11 +59,27 @@ public class BookBorrowsController implements SecuredController {
         );
     }
 
+    @Operation(summary = "Delete a book borrow by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted the book borrow"),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Book borrow not found",
+                    content = @Content) })
     @DeleteMapping("/{bookBorrowId}")
     public void removeBookBorrow(@PathVariable Long bookBorrowId) {
         bookBorrowRepository.deleteById(bookBorrowId);
     }
 
+    @Operation(summary = "Update a book borrow")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated the book borrow",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = BookBorrowDTO.class)) }),
+            @ApiResponse(responseCode = "400", description = "Invalid id supplied",
+                    content = @Content),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content) })
     @PutMapping("/{bookBorrowId}")
     public BookBorrowDTO editBookBorrow(@PathVariable Long bookBorrowId, @RequestBody BorrowManagementDTO borrowDTO) {
         return BookBorrowDTO.bookBorrowToBookBorrowDTO(
