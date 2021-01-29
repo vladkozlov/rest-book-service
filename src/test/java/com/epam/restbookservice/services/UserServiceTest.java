@@ -171,7 +171,9 @@ class UserServiceTest {
         long userId = 3L;
         User user = new User();
         user.setId(userId);
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
 
+        user.setUsername("android");
         underTest.modifyUser(userId, user);
 
         verify(userRepository).save(user);

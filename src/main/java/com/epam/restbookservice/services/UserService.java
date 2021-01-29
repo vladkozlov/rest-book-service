@@ -140,7 +140,7 @@ public class UserService {
             u.setBorrowedBooks(user.getBorrowedBooks());
         }
 
-        return Optional.of(userRepository.save(u));
+        return Optional.ofNullable(userRepository.save(u));
     }
 
     public void deleteUser(Long id) {
