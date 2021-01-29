@@ -16,8 +16,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Data
@@ -66,7 +66,7 @@ public class User {
         this.lastName = lastName;
         this.roles = Arrays.asList(role);
         this.isEnabled = true;
-        this.borrowedBooks = Collections.emptyList();
+        this.borrowedBooks = new ArrayList<>();
     }
 
     public User(String username, String password, String firstName, String lastName, List<Role> roles) {
@@ -76,7 +76,7 @@ public class User {
         this.lastName = lastName;
         this.roles = roles;
         this.isEnabled = true;
-        this.borrowedBooks = Collections.emptyList();
+        this.borrowedBooks = new ArrayList<>();
     }
 
     public User(String username, String password, String firstName, String lastName) {
@@ -84,7 +84,7 @@ public class User {
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.borrowedBooks = Collections.emptyList();
+        this.borrowedBooks = new ArrayList<>();
     }
 
     public void borrowBook(BookBorrow bookBorrow) {
