@@ -1,15 +1,11 @@
 package com.epam.restbookservice.services;
 
 import com.epam.restbookservice.domain.Book;
-import com.epam.restbookservice.domain.BookBorrow;
 import com.epam.restbookservice.dtos.BookDTO;
-import com.epam.restbookservice.repositories.BookBorrowRepository;
 import com.epam.restbookservice.repositories.BookRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +14,6 @@ import java.util.Optional;
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final UserService userService;
 
     public Book saveBook(BookDTO request) {
         Book book = new Book();
